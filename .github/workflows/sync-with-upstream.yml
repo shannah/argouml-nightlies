@@ -1,0 +1,40 @@
+name: Sync Changes
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs every day at midnight
+  workflow_dispatch:
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Git
+        run: |
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+      - uses: actions/checkout@v3
+
+      - name: Clone repo
+        run: |
+          git clone https://github.com/argouml-tigris-org/argouml --depth=1
+          cd argouml
+
+      - name: Check for changes
+        env:
+          GH_TOKEN: ${{ secrets.MY_PAT }}
+        run: |
+          cd argouml
+          git rev-parse HEAD > commit_hash.txt
+          if [ ! -f ../commit_hash.txt ] || [ ! cmp --silent -- file1.txt file2.txt ]; then
+            cp commit_hash.txt ../commit_hash.txt
+            cd ..
+            git add commit_hash.txt
+
+            git commit -m "Synced with latest" || true
+            git push
+            gh workflow run jdeploy.yml
+          fi

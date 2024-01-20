@@ -1,0 +1,56 @@
+# This workflow will build a Java project with Maven and bundle them as native app installers with jDeploy
+
+name: Build Releases
+
+on:
+  push:
+    branches: ['*', '!gh-pages']
+    tags: ['*']
+  workflow_dispatch:
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Git
+        run: |
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Check if commit hash file exists
+        id: check_file
+        run: |
+          if [ -f "commit_hash.txt" ]; then
+            echo "COMMIT_HASH_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "COMMIT_HASH_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Clone repo
+        if: env.COMMIT_HASH_EXISTS == 'true'
+        run: |
+          git clone https://github.com/argouml-tigris-org/argouml --depth=1
+          cd argouml
+
+      - name: Build with Maven
+        if: env.COMMIT_HASH_EXISTS == 'true'
+        run: |
+          cd argouml
+          mvn package -DskipTests
+          mkdir ../build
+          mv src/argouml-build/target/argouml-jar-with-dependencies.jar ../build/argouml-jar-with-dependencies.jar
+
+      - name: Build App Installer Bundles
+        if: env.COMMIT_HASH_EXISTS == 'true'
+        uses: shannah/jdeploy@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      
