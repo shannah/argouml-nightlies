@@ -1,0 +1,13 @@
+{
+    "background_color": "#fff",
+    "display": "standalone",
+    "name": "ArgoUML",
+    "start_url": ".",
+    "description": "A UML Modeling tool",
+    "short_name": "ArgoUML",
+    "icons": [{
+        "sizes": "512x512",
+        "src": "icon.png",
+        "type": "image/png"
+    }]
+}
