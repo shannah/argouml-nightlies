@@ -6,7 +6,16 @@
         "jdk": false,
         "javaVersion": "8",
         "jar": "build/argouml-jar-with-dependencies.jar",
-        "title": "ArgoUML"
+        "title": "ArgoUML",
+        "cheerpj": {
+            "githubPages": {
+                "branchPath": "{{ branch }}",
+                "tagPath": "app",
+                "branch": "gh-pages",
+                "enabled": true
+            },
+            "enabled": true
+        }
     },
     "dependencies": {
         "command-exists-promise": "^2.0.2",
