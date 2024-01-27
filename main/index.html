@@ -7,7 +7,7 @@
 
     <title>ArgoUML</title>
 
-    <script src="https://cjrtnc.leaningtech.com/3.0rc2/cj3loader.js"></script>
+    <script src="https://cjrtnc.leaningtech.com/3_20230915_194/cj3loader.js"></script>
 
     <style>
       html, body { margin: 0; height: 100%; }
@@ -380,9 +380,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
             async function onWindowResize() {
                 document.getElementById("cheerpjDisplay").style.height = '100%';
                 document.getElementById("cheerpjDisplay").style.width = '100%';
-                console.info("About to call onResize");
                 await CheerpjSwingUtils.onResize();
-                console.info("Finished calling onResize");
             }
             window.addEventListener("resize", onWindowResize);
             setProgress(90);
