@@ -50,7 +50,7 @@ jobs:
 
       - name: Build App Installer Bundles
         if: env.COMMIT_HASH_EXISTS == 'true'
-        uses: shannah/jdeploy@feature/cheerpj-improvements
+        uses: shannah/jdeploy@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       
