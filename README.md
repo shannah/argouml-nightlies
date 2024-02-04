@@ -1,4 +1,4 @@
-# ArgoUML Unoficial Nightly Builds
+# ArgoUML Unofficial Nightly Builds
 
 This repository provides nightly builds for [ArgoUML](https://github.com/argouml-tigris-org/argouml). 
 
