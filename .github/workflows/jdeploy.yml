@@ -90,5 +90,6 @@ jobs:
           signing_certificate: ${{ secrets.MAC_DEVELOPER_CERTIFICATE }}
           signing_certificate_password: ${{ secrets.MAC_DEVELOPER_CERTIFICATE_PASSWORD }}
           apple_id: ${{ secrets.MAC_DEVELOPER_APPLE_ID }}
-          apple_app_specific_password: ${{ secrets.MAC_APP_SPECIFIC_PASSWORD }}
-          bundle_id: 'ca.weblite.argouml'
+          notarization_key_id: ${{ secrets.NOTARIZATION_KEY_ID }}
+          notarization_issuer_id: ${{ secrets.NOTARIZATION_KEY_ISSUER_ID }}
+          notarization_api_key_base64: ${{ secrets.NOTARIZATION_KEY_P8 }}
