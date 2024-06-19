@@ -12,7 +12,9 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-
+    outputs:
+      commit-hash-exists: ${{ steps.check-commit-hash.outputs.commit-hash-exists }}
+      secrets-defined: ${{ steps.check-secrets.outputs.secrets-defined }}
     steps:
       - name: Set up Git
         run: |
@@ -50,7 +52,43 @@ jobs:
 
       - name: Build App Installer Bundles
         if: env.COMMIT_HASH_EXISTS == 'true'
-        uses: shannah/jdeploy@master
+        uses: shannah/jdeploy@self-sign-mac
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      
+
+      - name: Determine if sign-and-notarize should run
+        if: env.COMMIT_HASH_EXISTS == 'true'
+        id: check-commit-hash
+        run: |
+          echo "::set-output name=commit-hash-exists::true"
+
+      - name: Check if secrets are defined
+        if: env.COMMIT_HASH_EXISTS == 'true'
+        id: check-secrets
+        run: |
+          if [ -n "${{ secrets.SIGNING_CERTIFICATE }}" ] && [ -n "${{ secrets.APPLE_ID }}" && [ -n "${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}" ]; then
+            echo "Secrets are defined."
+            echo "::set-output name=secrets-defined::true"
+          else
+            echo "Secrets are not defined."
+            echo "::set-output name=secrets-defined::false"
+          fi
+
+  sign-and-notarize:
+    permissions:
+      contents: write
+    runs-on: macos-latest
+    needs: build
+    if: ${{ needs.build.outputs.commit-hash-exists == 'true' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Use Sign and Notarize macOS Apps Action
+        uses: shannah/jdeploy/codesign-mac@self-sign-mac
+        with:
+          signing_certificate: ${{ secrets.MAC_DEVELOPER_CERTIFICATE }}
+          signing_certificate_password: ${{ secrets.MAC_DEVELOPER_CERTIFICATE_PASSWORD }}
+          apple_id: ${{ secrets.MAC_DEVELOPER_APPLE_ID }}
+          apple_app_specific_password: ${{ secrets.MAC_APP_SPECIFIC_PASSWORD }}
+          bundle_id: 'ca.weblite.argouml'
